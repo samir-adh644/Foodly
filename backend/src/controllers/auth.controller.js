@@ -1,4 +1,5 @@
 const userModel = require('../models/user.model')
+const foodPartnerModel = require('../models/foodpartner.model')
 const bcrypt= require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
@@ -80,4 +81,88 @@ async function logoutUser(req,res){
         message:"User logged out Successfully"
     })
 }
-module.exports = {registerUser,loginUser,logoutUser}
+
+async function registerFoodPartner(req,res){
+        const {name, email, password} = req.body;
+    const isUserExists = await foodPartnerModel.findOne({email})
+
+    if (isUserExists){
+        return res.status(400).json({
+            message:"FoodPartner already exists"
+        })
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await foodPartnerModel.create({
+        name,
+        email,
+        password:hashedPassword
+    })
+
+    const token = jwt.sign({
+        id:user._id,
+    },process.env.JWT_SECRET)
+
+    res.cookie("token",token)
+
+    res.status(201).json({
+        message:"FoodPartner Registered Successfully",
+        user:{
+            id:user._id,
+            email: user.email,
+            name: user.name
+        }
+    })
+}
+
+async function loginFoodPartner(req,res){
+    const {email,password}=req.body;
+
+    const user= await foodPartnerModel.findOne({email})
+
+    if (!user){
+        return res.status(400).json({
+            message:"Invalid email or password"
+        })
+    }
+
+    const pwdmatch = await bcrypt.compare(password,user.password);
+
+    if (!pwdmatch){
+        return res.status(400).json({
+            message:"Invalid email or password"
+        })
+    }
+
+    const token = jwt.sign({
+        id:user._id,
+    },process.env.JWT_SECRET)
+
+    res.cookie("token",token)
+
+    res.status(200).json({
+        message:"FoodPartner Logged In Successfully",
+        user:{
+            id:user._id,
+            email: user.email,
+            name: user.name
+        }
+    })
+}
+
+async function logoutFoodPartner(req,res){
+    res.clearCookie("token");
+    res.status(200).json({
+        message:"FoodPartner logged out Successfully"
+    })    
+}
+
+module.exports = {
+    registerUser,
+    loginUser,
+    logoutUser,
+    registerFoodPartner,
+    loginFoodPartner,
+    logoutFoodPartner
+}
