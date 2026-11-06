@@ -83,7 +83,7 @@ async function logoutUser(req,res){
 }
 
 async function registerFoodPartner(req,res){
-        const {name, email, password} = req.body;
+        const {name, email,phone, address, password} = req.body;
     const isUserExists = await foodPartnerModel.findOne({email})
 
     if (isUserExists){
@@ -97,6 +97,8 @@ async function registerFoodPartner(req,res){
     const user = await foodPartnerModel.create({
         name,
         email,
+        phone,
+        address,
         password:hashedPassword
     })
 
@@ -111,7 +113,9 @@ async function registerFoodPartner(req,res){
         user:{
             id:user._id,
             email: user.email,
-            name: user.name
+            name: user.name,
+            address: user.address,
+            phone: user.phone
         }
     })
 }
