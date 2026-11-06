@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const fields = [
   { name: 'name', label: 'Name', type: 'text', placeholder: 'Your name', autoComplete: 'name' },
@@ -9,17 +10,24 @@ const fields = [
 
 function UserRegister() {
 
+  const navigate = useNavigate();
+
   const handleSubmit = async(e) => {
     e.preventDefault();
     const fullName = e.target.name.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-    await axios.post("http://localhost:3000/api/auth/user/register",{
+    const response = await axios.post("http://localhost:3000/api/auth/user/register",{
       fullName,
       email,
       password
+    },{
+      withCredentials:true
     })
+
+    console.log(response.data);
+    navigate("/");
   };
 
   return <main className="auth-shell">
