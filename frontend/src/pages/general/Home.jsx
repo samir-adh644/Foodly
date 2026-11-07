@@ -1,10 +1,31 @@
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 const Home = () => {
   const [videos, setVideos] = useState([])
   const [activeVideo, setActiveVideo] = useState(0)
   const videoRefs = useRef([])
+  const navigate = useNavigate()
+
+  const visitStore = (video) => {
+    const partner = video.foodPartner || {}
+
+    
+
+    navigate(`/foodPartner/${partner}`, {
+      state: {
+        restaurant: {
+          name: partner.name || video.restaurantName || 'Green Table Kitchen',
+          address: partner.address || video.address || '24 Market Street, Portland',
+          image: partner.image || partner.profileImage || video.profileImage,
+          customersServed: partner.customersServed || video.customersServed || '15K',
+          totalMeals: partner.totalMeals || video.totalMeals,
+        },
+        selectedVideo: video,
+      },
+    })
+  }
 
   // Fetch videos from backend
   useEffect(() => {
@@ -119,7 +140,7 @@ const Home = () => {
 
                 <p>{video.description}</p>
 
-                <button className="visit-button" type="button">
+                  <button className="visit-button" type="button" onClick={() => visitStore(video)}>
                   Visit Store <span aria-hidden="true">→</span>
                 </button>
 
