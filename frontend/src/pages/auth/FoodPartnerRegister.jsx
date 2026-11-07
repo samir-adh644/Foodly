@@ -33,7 +33,7 @@ function FoodPartnerRegister() {
     })
 
     console.log(response.data);
-    navigate("/");
+    navigate("/create-food");
   };
 
 
