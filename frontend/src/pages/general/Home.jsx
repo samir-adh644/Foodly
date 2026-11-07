@@ -1,19 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import BottomTabBar from '../../components/BottomTabBar'
 
 const Home = () => {
   const [videos, setVideos] = useState([])
   const [activeVideo, setActiveVideo] = useState(0)
+  const [pendingActions, setPendingActions] = useState({})
   const videoRefs = useRef([])
   const navigate = useNavigate()
 
   const visitStore = (video) => {
     const partner = video.foodPartner || {}
-
-    
-
-    navigate(`/foodPartner/${partner}`, {
+    const partnerId = typeof partner === 'object' ? partner._id || partner.id : partner
+    navigate(`/foodPartner/${partnerId}`, {
       state: {
         restaurant: {
           name: partner.name || video.restaurantName || 'Green Table Kitchen',
@@ -25,6 +25,52 @@ const Home = () => {
         selectedVideo: video,
       },
     })
+  }
+
+  const handleAction = async (video, action) => {
+    const actionKey = `${video._id}-${action}`
+    if (pendingActions[actionKey]) return
+
+    const endpoint = {
+      like: '/like',
+      comment: '/comment',
+      save: '/save',
+    }[action]
+    const countKey = `${action}Count`
+    const previousCount = video[countKey] || 0
+    const isToggle = action === 'like' || action === 'save'
+    const wasActive = Boolean(video[`_${action}d`])
+    const nextActive = isToggle ? !wasActive : true
+    const nextCount = isToggle
+      ? Math.max(0, previousCount + (nextActive ? 1 : -1))
+      : previousCount + 1
+
+    setPendingActions((current) => ({ ...current, [actionKey]: true }))
+    setVideos((current) => current.map((item) => (
+      item._id === video._id
+        ? { ...item, [countKey]: nextCount, [`_${action}d`]: nextActive }
+        : item
+    )))
+
+    try {
+      await axios.post(`http://localhost:3000/api/food${endpoint}`, {
+        foodId: video._id,
+        ...(action === 'comment' ? { comment: 'Great food!' } : {}),
+      }, { withCredentials: true })
+    } catch (error) {
+      console.error(`Error ${action}ing video:`, error)
+      setVideos((current) => current.map((item) => (
+        item._id === video._id
+          ? { ...item, [countKey]: previousCount, [`_${action}d`]: wasActive }
+          : item
+      )))
+    } finally {
+      setPendingActions((current) => {
+        const next = { ...current }
+        delete next[actionKey]
+        return next
+      })
+    }
   }
 
   // Fetch videos from backend
@@ -158,19 +204,36 @@ const Home = () => {
 
             <div className="reel-actions" aria-label={`${video.name} actions`}>
 
-              <button type="button" aria-label="Like video">
+              <button
+                type="button"
+                aria-label={video._liked ? 'Unlike video' : 'Like video'}
+                className={video._liked ? 'reel-action-active' : ''}
+                onClick={() => handleAction(video, 'like')}
+                disabled={pendingActions[`${video._id}-like`]}
+              >
                 <span>♡</span>
-                <small>1.2k</small>
+                <small>{video.likeCount || 0}</small>
               </button>
 
-              <button type="button" aria-label="Comment on video">
+              <button
+                type="button"
+                aria-label="Comment on video"
+                onClick={() => handleAction(video, 'comment')}
+                disabled={pendingActions[`${video._id}-comment`]}
+              >
                 <span>◌</span>
-                <small>84</small>
+                <small>{video.commentCount || 0}</small>
               </button>
 
-              <button type="button" aria-label="Share video">
-                <span>↗</span>
-                <small>Share</small>
+              <button
+                type="button"
+                aria-label={video._saved ? 'Unsave video' : 'Save video'}
+                className={video._saved ? 'reel-action-active' : ''}
+                onClick={() => handleAction(video, 'save')}
+                disabled={pendingActions[`${video._id}-save`]}
+              >
+                <span>🔖</span>
+                <small>{video.saveCount || 0}</small>
               </button>
 
             </div>
@@ -196,6 +259,8 @@ const Home = () => {
         ))}
 
       </div>
+
+      <BottomTabBar />
 
     </main>
   )

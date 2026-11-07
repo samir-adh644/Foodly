@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 const DUMMY_API_URL = 'http://localhost:3000/api/food'
 
 const CreateFood = () => {
+  const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', description: '', video: null })
   const [status, setStatus] = useState({ type: '', message: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -36,6 +38,7 @@ try {
 
     setForm({ name: '', description: '', video: null });
     event.target.reset();
+    navigate("/")
 
 } catch (error) {
     console.log(error.response?.data || error);

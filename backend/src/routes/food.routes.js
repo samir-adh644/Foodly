@@ -15,7 +15,12 @@ router.post('/',authMiddleware.authFoodPartnerMiddleware,
 
 router.get("/",authMiddleware.authUserMiddleware,foodController.getFoodItems)
 
+router.post("/like",authMiddleware.authUserMiddleware,foodController.likeFood)
 
+router.post("/save",authMiddleware.authUserMiddleware,foodController.saveFood)
 
+router.get("/savedFoods",authMiddleware.authUserMiddleware,foodController.getSavedFood)
+
+router.post("/comment",authMiddleware.authUserMiddleware,foodController.commentOnFood)
 
 module.exports = router;

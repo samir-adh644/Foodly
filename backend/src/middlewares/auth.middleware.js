@@ -14,7 +14,7 @@ async function authFoodPartnerMiddleware(req, res, next){
 
     try{
         const decoded = jwt.verify(token,process.env.JWT_SECRET)
-        console.log(decoded)
+
 
         const foodPartner = await foodPartnerModel.findById(decoded.id);
         if (!foodPartner) {
@@ -49,17 +49,25 @@ async function authUserMiddleware(req,res,next){
     try{
         const decoded = jwt.verify(token,process.env.JWT_SECRET)
 
-        const user = await userModel.findById(decoded._id);
 
-        req.user = user;
+        const user = await userModel.findById(decoded.id);
 
+        if (!user) {
+            return res.status(401).json({
+            message: "User not found. Please login again."
+        });
+            }
+
+            req.user = user;
+
+            next()
         
     }catch (err){
         return res.status(401).json({
             message:"Invalid Token"
         })
     }
-    next()
+    
 }
 module.exports = {
     authFoodPartnerMiddleware,

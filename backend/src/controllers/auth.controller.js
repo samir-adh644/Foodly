@@ -162,11 +162,22 @@ async function logoutFoodPartner(req,res){
     })    
 }
 
+async function getUserData(req,res){
+    const user = req.user;
+
+    res.status(201).json({
+        message:"User data retrived",
+        user
+    })
+
+}
+
 module.exports = {
     registerUser,
     loginUser,
     logoutUser,
     registerFoodPartner,
     loginFoodPartner,
-    logoutFoodPartner
+    logoutFoodPartner,
+    getUserData
 }

@@ -1,12 +1,13 @@
 const express=require('express');
 const authController = require('../controllers/auth.controller');
-
+const authMiddleware= require('../middlewares/auth.middleware')
 const router = express.Router();
 
 // user auth APIs
 router.post('/user/register',authController.registerUser);
 router.post('/user/login',authController.loginUser);
 router.post('/user/logout',authController.logoutUser);
+router.get('/user/account',authMiddleware.authUserMiddleware,authController.getUserData)
 
 // foodpartner auth APIs
 router.post('/foodPartner/register',authController.registerFoodPartner)
