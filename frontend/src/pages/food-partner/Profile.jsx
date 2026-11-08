@@ -20,7 +20,7 @@ const Profile = () => {
     const loadProfile = async () => {
       try {
         const [profileResponse] = await Promise.all([
-          axios.get(`http://localhost:3000/api/foodPartner/${id}`, { withCredentials: true })
+          axios.get(`${import.meta.env.VITE_API_URL}/api/foodPartner/${id}`, { withCredentials: true })
         ])
 
         if (!isMounted) return

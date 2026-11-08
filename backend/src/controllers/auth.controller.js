@@ -4,11 +4,18 @@ const {validationResult}=require('express-validator')
 const bcrypt= require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
+const tokenCookieOptions = {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 7 * 24 * 60 * 60 * 1000
+}
+
 async function registerUser(req,res){
     const errors = validationResult(req);
 
     if (!errors.isEmpty()){
-        res.status(400).json({errors: errors.array()})
+        return res.status(400).json({errors: errors.array()})
     }
     const {fullName, email, password} = req.body;
     const isUserExists = await userModel.findOne({email})
@@ -27,11 +34,12 @@ async function registerUser(req,res){
         password:hashedPassword
     })
 
-    const token = jwt.sign({
-        id:user._id,
-    },process.env.JWT_SECRET)
+    const userToken = jwt.sign({
+        _id:user._id,
+        role: 'user'
+    },process.env.JWT_SECRET, { expiresIn: '7d' })
 
-    res.cookie("token",token)
+    res.cookie("userToken",userToken, tokenCookieOptions)
 
     res.status(201).json({
         message:"User Registered Successfully",
@@ -50,7 +58,7 @@ async function loginUser(req,res){
     const errors = validationResult(req);
 
     if (!errors.isEmpty()){
-        res.status(400).json({errors: errors.array()})
+        return res.status(400).json({errors: errors.array()})
     }
     const {email,password}=req.body;
 
@@ -71,11 +79,12 @@ async function loginUser(req,res){
         })
     }
 
-    const token = jwt.sign({
-        id:user._id,
-    },process.env.JWT_SECRET)
+    const userToken = jwt.sign({
+        _id:user._id,
+        role: 'user'
+    },process.env.JWT_SECRET, { expiresIn: '7d' })
 
-    res.cookie("token",token)
+    res.cookie("userToken",userToken, tokenCookieOptions)
 
     res.status(200).json({
         message:"User Logged In Successfully",
@@ -89,7 +98,8 @@ async function loginUser(req,res){
 
 async function logoutUser(req,res){
 
-    res.clearCookie("token");
+    res.clearCookie("userToken", tokenCookieOptions);
+    res.clearCookie("token", tokenCookieOptions);
     res.status(200).json({
         message:"User logged out Successfully"
     })
@@ -99,7 +109,7 @@ async function registerFoodPartner(req,res){
     const errors = validationResult(req);
 
     if (!errors.isEmpty()){
-        res.status(400).json({errors: errors.array()})
+        return res.status(400).json({errors: errors.array()})
     }
         const {name, email,phone, address, password} = req.body;
     const isUserExists = await foodPartnerModel.findOne({email})
@@ -120,11 +130,12 @@ async function registerFoodPartner(req,res){
         password:hashedPassword
     })
 
-    const token = jwt.sign({
+    const foodPartnerToken = jwt.sign({
         _id:user._id,
-    },process.env.JWT_SECRET)
+        role: 'foodPartner'
+    },process.env.JWT_SECRET, { expiresIn: '7d' })
 
-    res.cookie("token",token)
+    res.cookie("foodPartnerToken",foodPartnerToken, tokenCookieOptions)
 
     res.status(201).json({
         message:"FoodPartner Registered Successfully",
@@ -142,7 +153,7 @@ async function loginFoodPartner(req,res){
     const errors = validationResult(req);
 
     if (!errors.isEmpty()){
-        res.status(400).json({errors: errors.array()})
+        return res.status(400).json({errors: errors.array()})
     }
     const {email,password}=req.body;
 
@@ -162,11 +173,12 @@ async function loginFoodPartner(req,res){
         })
     }
 
-    const token = jwt.sign({
+    const foodPartnerToken = jwt.sign({
         _id:foodPartner._id,
-    },process.env.JWT_SECRET)
+        role: 'foodPartner'
+    },process.env.JWT_SECRET, { expiresIn: '7d' })
 
-    res.cookie("token",token)
+    res.cookie("foodPartnerToken",foodPartnerToken, tokenCookieOptions)
 
     res.status(200).json({
         message:"FoodPartner Logged In Successfully",
@@ -179,7 +191,8 @@ async function loginFoodPartner(req,res){
 }
 
 async function logoutFoodPartner(req,res){
-    res.clearCookie("token");
+    res.clearCookie("foodPartnerToken", tokenCookieOptions);
+    res.clearCookie("token", tokenCookieOptions);
     res.status(200).json({
         message:"FoodPartner logged out Successfully"
     })    

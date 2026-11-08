@@ -14,7 +14,7 @@ const Account = ({ isFoodPartner = false }) => {
   useEffect(() => {
     const accountType = isFoodPartner ? 'foodPartner' : 'user'
 
-    axios.get(`http://localhost:3000/api/auth/${accountType}/account`, {
+    axios.get(`${import.meta.env.VITE_API_URL}/api/auth/${accountType}/account`, {
       withCredentials: true,
     })
       .then((response) => {
@@ -33,7 +33,7 @@ const Account = ({ isFoodPartner = false }) => {
 
     try {
       const accountType = isFoodPartner ? 'foodPartner' : 'user'
-      await axios.post(`http://localhost:3000/api/auth/${accountType}/logout`, {}, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/${accountType}/logout`, {}, {
         withCredentials: true,
       })
       navigate(isFoodPartner ? '/foodPartner/login' : '/user/login', { replace: true })

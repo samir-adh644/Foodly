@@ -3,7 +3,7 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import BottomTabBar from '../../components/BottomTabBar'
 
-const DUMMY_API_URL = 'http://localhost:3000/api/food'
+const DUMMY_API_URL = `${import.meta.env.VITE_API_URL}/api/food`
 
 const CreateFood = () => {
   const navigate = useNavigate();

@@ -175,7 +175,7 @@ async function getComments(req,res){
 }
 
 async function getMyFoods(req,res){
-    const foodPartnerId = req.query.foodPartnerId;
+    const foodPartnerId = req.foodPartner._id;
 
     const foods = await foodModel.find({foodPartner:foodPartnerId})
 

@@ -9,8 +9,8 @@ const MyFoods = () => {
 
   useEffect(() => {
     const loadFoods = async () => {
-      try {
-        const accountResponse = await axios.get('http://localhost:3000/api/auth/foodPartner/account', {
+      try {   
+        const accountResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/auth/foodPartner/account`, {
           withCredentials: true,
         })
         const foodPartner = accountResponse.data.foodPartner || {}
@@ -20,7 +20,7 @@ const MyFoods = () => {
           throw new Error('Food partner ID was not returned.')
         }
 
-        const foodsResponse = await axios.get('http://localhost:3000/api/food/foodUploads', {
+        const foodsResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/food/foodUploads`, {
           params: { foodPartnerId },
           withCredentials: true,
         })

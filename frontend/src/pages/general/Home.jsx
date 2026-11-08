@@ -55,7 +55,7 @@ const Home = ({ isFoodPartner = false }) => {
     )))
 
     try {
-      await axios.post(`http://localhost:3000/api/food${endpoint}`, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/food${endpoint}`, {
         foodId: video._id,
         ...(action === 'comment' ? { comment: 'Great food!' } : {}),
       }, { withCredentials: true })
@@ -77,7 +77,7 @@ const Home = ({ isFoodPartner = false }) => {
 
   // Fetch videos from backend
   useEffect(() => {
-    axios.get("http://localhost:3000/api/food",{
+    axios.get(`${import.meta.env.VITE_API_URL}/api/food`,{
       withCredentials:true
     })
       .then(response => {

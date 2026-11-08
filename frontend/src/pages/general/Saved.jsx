@@ -7,7 +7,7 @@ const Saved = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/food/savedFoods', { withCredentials: true })
+    axios.get(`${import.meta.env.VITE_API_URL}/api/food/savedFoods`, { withCredentials: true })
       .then((response) => {
         setSavedVideos(response.data.savedFoods || [])
       })
