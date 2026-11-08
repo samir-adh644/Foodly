@@ -4,11 +4,20 @@ const {validationResult}=require('express-validator')
 const bcrypt= require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
+const isSecureRequest = process.env.NODE_ENV === 'production'
+    || process.env.FRONTEND_URL?.startsWith('https://');
+
 const tokenCookieOptions = {
     httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    sameSite: isSecureRequest ? 'none' : 'lax',
+    secure: isSecureRequest,
     maxAge: 7 * 24 * 60 * 60 * 1000
+}
+
+const clearTokenCookieOptions = {
+    httpOnly: true,
+    sameSite: tokenCookieOptions.sameSite,
+    secure: tokenCookieOptions.secure
 }
 
 async function registerUser(req,res){
@@ -39,11 +48,7 @@ async function registerUser(req,res){
         role: 'user'
     },process.env.JWT_SECRET, { expiresIn: '7d' })
 
-    res.cookie("userToken",userToken, tokenCookieOptions,{
-    httpOnly: true,
-    secure: true,
-    sameSite: "none"
-    })
+    res.cookie("userToken", userToken, tokenCookieOptions)
 
     res.status(201).json({
         message:"User Registered Successfully",
@@ -88,11 +93,7 @@ async function loginUser(req,res){
         role: 'user'
     },process.env.JWT_SECRET, { expiresIn: '7d' })
 
-    res.cookie("userToken",userToken, tokenCookieOptions,{
-            httpOnly: true,
-    secure: true,
-    sameSite: "none"}
-    )
+    res.cookie("userToken", userToken, tokenCookieOptions)
 
     res.status(200).json({
         message:"User Logged In Successfully",
@@ -106,8 +107,8 @@ async function loginUser(req,res){
 
 async function logoutUser(req,res){
 
-    res.clearCookie("userToken", tokenCookieOptions);
-    res.clearCookie("token", tokenCookieOptions);
+    res.clearCookie("userToken", clearTokenCookieOptions);
+    res.clearCookie("token", clearTokenCookieOptions);
     res.status(200).json({
         message:"User logged out Successfully"
     })
@@ -143,12 +144,7 @@ async function registerFoodPartner(req,res){
         role: 'foodPartner'
     },process.env.JWT_SECRET, { expiresIn: '7d' })
 
-    res.cookie("foodPartnerToken",foodPartnerToken, tokenCookieOptions,
-        {
-            httpOnly: true,
-    secure: true,
-    sameSite: "none"}
-    )
+    res.cookie("foodPartnerToken", foodPartnerToken, tokenCookieOptions)
 
     res.status(201).json({
         message:"FoodPartner Registered Successfully",
@@ -191,12 +187,7 @@ async function loginFoodPartner(req,res){
         role: 'foodPartner'
     },process.env.JWT_SECRET, { expiresIn: '7d' })
 
-    res.cookie("foodPartnerToken",foodPartnerToken, tokenCookieOptions,
-        {
-            httpOnly: true,
-    secure: true,
-    sameSite: "none"}
-    )
+    res.cookie("foodPartnerToken", foodPartnerToken, tokenCookieOptions)
 
     res.status(200).json({
         message:"FoodPartner Logged In Successfully",
@@ -209,8 +200,8 @@ async function loginFoodPartner(req,res){
 }
 
 async function logoutFoodPartner(req,res){
-    res.clearCookie("foodPartnerToken", tokenCookieOptions);
-    res.clearCookie("token", tokenCookieOptions);
+    res.clearCookie("foodPartnerToken", clearTokenCookieOptions);
+    res.clearCookie("token", clearTokenCookieOptions);
     res.status(200).json({
         message:"FoodPartner logged out Successfully"
     })    

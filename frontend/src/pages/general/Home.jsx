@@ -5,6 +5,7 @@ import BottomTabBar from '../../components/BottomTabBar'
 import Comments from '../../components/Comments'
 
 const Home = ({ isFoodPartner = false }) => {
+  const api = `${import.meta.env.VITE_API_URL}/api`
   const [videos, setVideos] = useState([])
   const [activeVideo, setActiveVideo] = useState(0)
   const [pendingActions, setPendingActions] = useState({})
@@ -80,14 +81,19 @@ const Home = ({ isFoodPartner = false }) => {
   // Verify the session before loading any home-page data.
   useEffect(() => {
     let isMounted = true
+    const controller = new AbortController()
     const accountType = isFoodPartner ? 'foodPartner' : 'user'
     const loginPath = isFoodPartner ? '/foodPartner/login' : '/user/login'
+    const requestConfig = {
+      withCredentials: true,
+      signal: controller.signal,
+    }
 
     const loadHome = async () => {
       try {
         const accountResponse = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/auth/${accountType}/account`,
-          { withCredentials: true },
+          `${api}/auth/${accountType}/account`,
+          requestConfig,
         )
 
         const account = isFoodPartner
@@ -95,20 +101,20 @@ const Home = ({ isFoodPartner = false }) => {
           : accountResponse.data.user
 
         if (!account) {
-          navigate(loginPath, { replace: true })
+          if (isMounted) navigate(loginPath, { replace: true })
           return
         }
 
         if (!isMounted) return
         setIsAuthenticated(true)
-        const foodResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/food`, {
-          withCredentials: true,
-        })
+        const foodResponse = await axios.get(`${api}/food`, requestConfig)
 
         if (isMounted) {
           setVideos(foodResponse.data.foodItems || [])
         }
       } catch (error) {
+        if (!isMounted || error.name === 'CanceledError' || error.code === 'ERR_CANCELED') return
+
         if (error.response?.status === 401 || error.response?.status === 403) {
           navigate(loginPath, { replace: true })
         } else {
@@ -123,8 +129,9 @@ const Home = ({ isFoodPartner = false }) => {
 
     return () => {
       isMounted = false
+      controller.abort()
     }
-  }, [isFoodPartner, navigate])
+  }, [api, isFoodPartner, navigate])
 
   // Handle video autoplay and pause
   useEffect(() => {
