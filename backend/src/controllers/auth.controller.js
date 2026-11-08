@@ -39,7 +39,11 @@ async function registerUser(req,res){
         role: 'user'
     },process.env.JWT_SECRET, { expiresIn: '7d' })
 
-    res.cookie("userToken",userToken, tokenCookieOptions)
+    res.cookie("userToken",userToken, tokenCookieOptions,{
+    httpOnly: true,
+    secure: true,
+    sameSite: "none"
+    })
 
     res.status(201).json({
         message:"User Registered Successfully",
@@ -84,7 +88,11 @@ async function loginUser(req,res){
         role: 'user'
     },process.env.JWT_SECRET, { expiresIn: '7d' })
 
-    res.cookie("userToken",userToken, tokenCookieOptions)
+    res.cookie("userToken",userToken, tokenCookieOptions,{
+            httpOnly: true,
+    secure: true,
+    sameSite: "none"}
+    )
 
     res.status(200).json({
         message:"User Logged In Successfully",
@@ -135,7 +143,12 @@ async function registerFoodPartner(req,res){
         role: 'foodPartner'
     },process.env.JWT_SECRET, { expiresIn: '7d' })
 
-    res.cookie("foodPartnerToken",foodPartnerToken, tokenCookieOptions)
+    res.cookie("foodPartnerToken",foodPartnerToken, tokenCookieOptions,
+        {
+            httpOnly: true,
+    secure: true,
+    sameSite: "none"}
+    )
 
     res.status(201).json({
         message:"FoodPartner Registered Successfully",
@@ -178,7 +191,12 @@ async function loginFoodPartner(req,res){
         role: 'foodPartner'
     },process.env.JWT_SECRET, { expiresIn: '7d' })
 
-    res.cookie("foodPartnerToken",foodPartnerToken, tokenCookieOptions)
+    res.cookie("foodPartnerToken",foodPartnerToken, tokenCookieOptions,
+        {
+            httpOnly: true,
+    secure: true,
+    sameSite: "none"}
+    )
 
     res.status(200).json({
         message:"FoodPartner Logged In Successfully",
