@@ -97,6 +97,13 @@ a { color: inherit; }
 .bottom-tab-active { color: var(--color-accent); }
 .simple-page { min-height: 100svh; padding-bottom: 90px; background: var(--color-background); }
 .simple-page-content { width: min(100% - 40px, 1050px); margin: 0 auto; padding: 70px 0 100px; }
+.my-foods-subtitle { margin: 0; color: var(--color-text-muted); font-size: 15px; }
+.my-foods-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; margin-top: 34px; }
+.my-food-card { overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-card); background: var(--color-surface); }
+.my-food-card video { display: block; width: 100%; aspect-ratio: 9 / 14; object-fit: cover; background: #101512; }
+.my-food-card div { padding: 14px 16px 16px; }
+.my-food-card h2 { margin: 0 0 6px; font-size: 18px; }
+.my-food-card p { margin: 0; color: var(--color-text-muted); font-size: 13px; line-height: 1.4; }
 .simple-page h1, .account-card h1 { margin: 10px 0 8px; font-size: clamp(36px, 6vw, 58px); letter-spacing: -.07em; }
 .saved-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; margin-top: 34px; }
 .saved-card { overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-card); background: var(--color-surface); }

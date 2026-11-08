@@ -8,6 +8,7 @@ const userTabs = [
 
 const partnerTabs = [
   { to: '/create-food', label: 'Create Food', icon: '+' },
+  { to: '/foodPartner/my-foods', label: 'Your Foods', icon: '▣' },
   { to: '/foodPartner/account', label: 'Account', icon: '◉' },
 ]
 

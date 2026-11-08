@@ -172,10 +172,25 @@ async function getComments(req,res){
             comments
         
     })
-
-
-
 }
+
+async function getMyFoods(req,res){
+    const foodPartnerId = req.query.foodPartnerId;
+
+    const foods = await foodModel.find({foodPartner:foodPartnerId})
+
+    if(!foods || foods.length===0){
+        return res.status(404).json({
+            message:"You have no foods",
+        })
+    }
+
+    res.status(200).json({
+        message:"All you foods retrived",
+        foods
+    })
+}
+
 
 module.exports = {
     createFood,
@@ -184,5 +199,6 @@ module.exports = {
     saveFood,
     getSavedFood,
     commentOnFood,
-    getComments
+    getComments,
+    getMyFoods
 }

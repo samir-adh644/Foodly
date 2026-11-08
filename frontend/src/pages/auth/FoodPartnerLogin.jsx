@@ -22,7 +22,7 @@ function FoodPartnerLogin() {
     });
 
 
-    navigate("/foodPartner/home");
+    navigate("/create-food");
   }
 
   return <main className="auth-shell">

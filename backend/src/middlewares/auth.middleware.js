@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken')
 async function authFoodPartnerMiddleware(req, res, next){
     const token = req.cookies.token;
     if(!token){
-        res.status(401).json({
+        return res.status(401).json({
             message:"Unauthorized access"
         })
     }
@@ -16,7 +16,7 @@ async function authFoodPartnerMiddleware(req, res, next){
         const decoded = jwt.verify(token,process.env.JWT_SECRET)
 
 
-        const foodPartner = await foodPartnerModel.findById(decoded.id);
+        const foodPartner = await foodPartnerModel.findById(decoded._id);
         if (!foodPartner) {
             return res.status(401).json({
                 message: "Food partner not found"
@@ -50,7 +50,9 @@ async function authUserMiddleware(req,res,next){
         const decoded = jwt.verify(token,process.env.JWT_SECRET)
 
 
-        const user = await userModel.findById(decoded.id);
+        // User tokens created by older login/register handlers use `id`,
+        // while newer tokens may use `_id`.
+        const user = await userModel.findById(decoded._id || decoded.id);
 
         if (!user) {
             return res.status(401).json({

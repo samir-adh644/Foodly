@@ -25,4 +25,6 @@ router.post("/comment",authMiddleware.authUserMiddleware,foodController.commentO
 
 router.get("/getComments",authMiddleware.authUserMiddleware,foodController.getComments)
 
+router.get("/foodUploads",authMiddleware.authFoodPartnerMiddleware,foodController.getMyFoods)
+
 module.exports = router;

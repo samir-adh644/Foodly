@@ -33,7 +33,7 @@ function FoodPartnerRegister() {
     })
 
 
-    navigate("/foodPartner/home");
+    navigate("/create-food");
   };
 
 
