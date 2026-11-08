@@ -9,6 +9,8 @@ const Home = ({ isFoodPartner = false }) => {
   const [activeVideo, setActiveVideo] = useState(0)
   const [pendingActions, setPendingActions] = useState({})
   const [commentFoodId, setCommentFoodId] = useState(null)
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const videoRefs = useRef([])
   const navigate = useNavigate()
 
@@ -75,18 +77,54 @@ const Home = ({ isFoodPartner = false }) => {
     }
   }
 
-  // Fetch videos from backend
+  // Verify the session before loading any home-page data.
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/api/food`,{
-      withCredentials:true
-    })
-      .then(response => {
-        setVideos(response.data.foodItems)
-      })
-      .catch(error => {
-        console.error("Error fetching food videos:", error)
-      })
-  }, [])
+    let isMounted = true
+    const accountType = isFoodPartner ? 'foodPartner' : 'user'
+    const loginPath = isFoodPartner ? '/foodPartner/login' : '/user/login'
+
+    const loadHome = async () => {
+      try {
+        const accountResponse = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/auth/${accountType}/account`,
+          { withCredentials: true },
+        )
+
+        const account = isFoodPartner
+          ? accountResponse.data.foodPartner
+          : accountResponse.data.user
+
+        if (!account) {
+          navigate(loginPath, { replace: true })
+          return
+        }
+
+        if (!isMounted) return
+        setIsAuthenticated(true)
+        const foodResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/food`, {
+          withCredentials: true,
+        })
+
+        if (isMounted) {
+          setVideos(foodResponse.data.foodItems || [])
+        }
+      } catch (error) {
+        if (error.response?.status === 401 || error.response?.status === 403) {
+          navigate(loginPath, { replace: true })
+        } else {
+          console.error('Error loading home data:', error)
+        }
+      } finally {
+        if (isMounted) setIsCheckingAuth(false)
+      }
+    }
+
+    loadHome()
+
+    return () => {
+      isMounted = false
+    }
+  }, [isFoodPartner, navigate])
 
   // Handle video autoplay and pause
   useEffect(() => {
@@ -125,6 +163,14 @@ const Home = ({ isFoodPartner = false }) => {
 
     return () => observer.disconnect()
   }, [videos])
+
+  if (isCheckingAuth || !isAuthenticated) {
+    return (
+      <main className="simple-page">
+        {isCheckingAuth && <p className="profile-state">Checking your session...</p>}
+      </main>
+    )
+  }
 
   return (
     <main className="reels-page">
