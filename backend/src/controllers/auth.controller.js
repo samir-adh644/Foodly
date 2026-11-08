@@ -1,9 +1,15 @@
 const userModel = require('../models/user.model')
 const foodPartnerModel = require('../models/foodpartner.model')
+const {validationResult}=require('express-validator')
 const bcrypt= require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
 async function registerUser(req,res){
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()){
+        res.status(400).json({errors: errors.array()})
+    }
     const {fullName, email, password} = req.body;
     const isUserExists = await userModel.findOne({email})
 
@@ -40,7 +46,14 @@ async function registerUser(req,res){
 }
 
 async function loginUser(req,res){
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()){
+        res.status(400).json({errors: errors.array()})
+    }
     const {email,password}=req.body;
+
 
     const user= await userModel.findOne({email})
 
@@ -83,6 +96,11 @@ async function logoutUser(req,res){
 }
 
 async function registerFoodPartner(req,res){
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()){
+        res.status(400).json({errors: errors.array()})
+    }
         const {name, email,phone, address, password} = req.body;
     const isUserExists = await foodPartnerModel.findOne({email})
 
@@ -121,6 +139,11 @@ async function registerFoodPartner(req,res){
 }
 
 async function loginFoodPartner(req,res){
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()){
+        res.status(400).json({errors: errors.array()})
+    }
     const {email,password}=req.body;
 
     const foodPartner= await foodPartnerModel.findOne({email})
