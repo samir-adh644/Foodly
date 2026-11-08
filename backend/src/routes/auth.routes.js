@@ -13,6 +13,7 @@ router.get('/user/account',authMiddleware.authUserMiddleware,authController.getU
 router.post('/foodPartner/register',authController.registerFoodPartner)
 router.post('/foodPartner/login',authController.loginFoodPartner)
 router.post('/foodPartner/logout',authController.logoutFoodPartner)
+router.get('/foodPartner/account',authMiddleware.authFoodPartnerMiddleware,authController.getFoodPartnerData)
 
 module.exports=router;
 

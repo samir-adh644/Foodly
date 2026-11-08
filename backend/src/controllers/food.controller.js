@@ -136,12 +136,13 @@ async function getSavedFood(req,res){
 }
 
 async function commentOnFood(req,res){
-    const {foodId} = req.body;
+    const {foodId, comment: commentText} = req.body;
     const user = req.user;
 
     const comment = await commentModel.create({
         user: user._id,
-        food: foodId
+        food: foodId,
+        comment: commentText
     })
 
     await foodModel.findByIdAndUpdate(foodId,{
@@ -154,11 +155,34 @@ async function commentOnFood(req,res){
     })
 }
 
+async function getComments(req,res){
+    const user = req.user;
+    const foodId= req.query.foodId;
+
+    const comments = await commentModel.find({food:foodId}).populate('user')
+
+    if(!comments || comments.length === 0){
+        return res.status(404).json({
+            message:"No comments found"
+        });        
+    }
+
+    res.status(200).json({
+        message:"Comments retrived successfully",
+            comments
+        
+    })
+
+
+
+}
+
 module.exports = {
     createFood,
     getFoodItems,
     likeFood,
     saveFood,
     getSavedFood,
-    commentOnFood
+    commentOnFood,
+    getComments
 }

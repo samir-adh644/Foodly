@@ -2,11 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import BottomTabBar from '../../components/BottomTabBar'
+import Comments from '../../components/Comments'
 
-const Home = () => {
+const Home = ({ isFoodPartner = false }) => {
   const [videos, setVideos] = useState([])
   const [activeVideo, setActiveVideo] = useState(0)
   const [pendingActions, setPendingActions] = useState({})
+  const [commentFoodId, setCommentFoodId] = useState(null)
   const videoRefs = useRef([])
   const navigate = useNavigate()
 
@@ -218,8 +220,7 @@ const Home = () => {
               <button
                 type="button"
                 aria-label="Comment on video"
-                onClick={() => handleAction(video, 'comment')}
-                disabled={pendingActions[`${video._id}-comment`]}
+                onClick={() => setCommentFoodId(video._id || video.id)}
               >
                 <span>◌</span>
                 <small>{video.commentCount || 0}</small>
@@ -260,7 +261,21 @@ const Home = () => {
 
       </div>
 
-      <BottomTabBar />
+      <BottomTabBar isFoodPartner={isFoodPartner} />
+
+      {commentFoodId && (
+        <Comments
+          foodId={commentFoodId}
+          onClose={() => setCommentFoodId(null)}
+          onCommentAdded={() => {
+            setVideos((current) => current.map((item) => (
+              (item._id || item.id) === commentFoodId
+                ? { ...item, commentCount: (item.commentCount || 0) + 1 }
+                : item
+            )))
+          }}
+        />
+      )}
 
     </main>
   )

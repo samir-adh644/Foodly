@@ -167,9 +167,20 @@ async function getUserData(req,res){
 
     res.status(201).json({
         message:"User data retrived",
+        role:'user',
         user
     })
 
+}
+
+async function getFoodPartnerData(req,res){
+    const foodPartner=req.foodPartner;
+
+    res.status(201).json({
+        message:"FoodPartner Data retrived",
+        role:'foodPartner',
+        foodPartner
+    })
 }
 
 module.exports = {
@@ -179,5 +190,6 @@ module.exports = {
     registerFoodPartner,
     loginFoodPartner,
     logoutFoodPartner,
-    getUserData
+    getUserData,
+    getFoodPartnerData
 }

@@ -1,12 +1,20 @@
 import { NavLink } from 'react-router-dom'
 
-const tabs = [
+const userTabs = [
   { to: '/', label: 'Home', icon: '⌂' },
   { to: '/saved', label: 'Saved', icon: '♡' },
   { to: '/account', label: 'Account', icon: '◉' },
 ]
 
-const BottomTabBar = () => (
+const partnerTabs = [
+  { to: '/create-food', label: 'Create Food', icon: '+' },
+  { to: '/foodPartner/account', label: 'Account', icon: '◉' },
+]
+
+const BottomTabBar = ({ isFoodPartner = false }) => {
+  const tabs = isFoodPartner ? partnerTabs : userTabs
+
+  return (
   <nav className="bottom-tabbar" aria-label="Main navigation">
     {tabs.map((tab) => (
       <NavLink
@@ -20,6 +28,7 @@ const BottomTabBar = () => (
       </NavLink>
     ))}
   </nav>
-)
+  )
+}
 
 export default BottomTabBar

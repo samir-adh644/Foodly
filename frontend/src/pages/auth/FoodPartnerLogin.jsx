@@ -21,8 +21,8 @@ function FoodPartnerLogin() {
       withCredentials: true
     });
 
-    console.log(response.data);
-    navigate("/create-food");
+
+    navigate("/foodPartner/home");
   }
 
   return <main className="auth-shell">

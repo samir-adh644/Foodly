@@ -23,7 +23,7 @@ function UserLogin() {
       withCredentials: true
     });
 
-    console.log(response.data);
+
     navigate("/");
   }
   return <main className="auth-shell">

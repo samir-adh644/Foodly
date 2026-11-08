@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import BottomTabBar from '../../components/BottomTabBar'
 
 const DUMMY_API_URL = 'http://localhost:3000/api/food'
 
@@ -38,7 +39,7 @@ try {
 
     setForm({ name: '', description: '', video: null });
     event.target.reset();
-    navigate("/")
+    navigate("/foodPartner/home")
 
 } catch (error) {
     console.log(error.response?.data || error);
@@ -56,7 +57,6 @@ try {
     <main className="create-food-page">
       <header className="create-food-header">
         <a className="profile-brand" href="/" aria-label="Foodly home"><span className="profile-brand-mark">F</span>foodly</a>
-        <a className="create-food-profile-link" href="/profile">View profile</a>
       </header>
 
       <section className="create-food-card" aria-labelledby="create-food-title">
@@ -80,6 +80,7 @@ try {
           <button className="primary-button" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Creating...' : 'Create food'}<span aria-hidden="true">→</span></button>
         </form>
       </section>
+      <BottomTabBar isFoodPartner />
     </main>
   )
 }

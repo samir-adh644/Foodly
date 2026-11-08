@@ -13,7 +13,7 @@ router.post('/',authMiddleware.authFoodPartnerMiddleware,
     upload.single("video"),
     foodController.createFood)
 
-router.get("/",authMiddleware.authUserMiddleware,foodController.getFoodItems)
+router.get("/",foodController.getFoodItems)
 
 router.post("/like",authMiddleware.authUserMiddleware,foodController.likeFood)
 
@@ -22,5 +22,7 @@ router.post("/save",authMiddleware.authUserMiddleware,foodController.saveFood)
 router.get("/savedFoods",authMiddleware.authUserMiddleware,foodController.getSavedFood)
 
 router.post("/comment",authMiddleware.authUserMiddleware,foodController.commentOnFood)
+
+router.get("/getComments",authMiddleware.authUserMiddleware,foodController.getComments)
 
 module.exports = router;
